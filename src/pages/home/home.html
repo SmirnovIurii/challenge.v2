@@ -1,0 +1,65 @@
+<ion-header>
+  <ion-navbar>
+    <button ion-button menuToggle>
+      <ion-icon name="menu"></ion-icon>
+    </button>
+    <ion-title>Todo List</ion-title>
+
+  </ion-navbar>
+</ion-header>
+
+<ion-content padding>
+
+  <button ion-button full (click)='addTodo()'>Add New</button>
+  <!--hide buttons on auth -->
+  <button navPush="LoginPage" ion-button full *ngIf="authService.authenticated === false">Login</button>
+  <button ion-button full *ngIf="authService.authenticated === true" (click)='logout()'>Logout</button>
+  <ion-list>
+    <ion-list-header>
+      Todos
+    </ion-list-header>
+    <div padding>
+      <ion-segment [(ngModel)]="todos">
+        <ion-segment-button (click)='countInProgres()' value="Active">
+          Active
+        </ion-segment-button>
+        <ion-segment-button (click)='countFinished()' value="Finished">
+          Finished
+        </ion-segment-button>
+      </ion-segment>
+    </div>
+    <div [ngSwitch]="todos">
+      <ion-list *ngSwitchCase="'Active'">
+        <ion-item detail-push *ngFor="let todo of Listoftodo$ | async" navPush="EditTodoPage" [navParams]="{todo: todo}">
+          <h2>{{ todo.title }}</h2>
+          <button ion-button clear item-end>
+            <!--I dont know why i cant see arrows on buttons -->
+            <ion-icon name="arrow-forward"></ion-icon>
+            <!--have to use this for arrows -->
+          </button>
+        </ion-item>
+      </ion-list>
+
+      <ion-list *ngSwitchCase="'Finished'">
+        <ion-item detail-push *ngFor="let todo of ListoftodoFinish$ | async" navPush="FinishedPage" [navParams]="{todo: todo}">
+          <h2>{{ todo.title }}</h2>
+          <button ion-button clear item-end>
+            <ion-icon name="arrow-forward"></ion-icon>
+          </button>
+        </ion-item>
+      </ion-list>
+    </div>
+
+  </ion-list>
+  <!--hide footer if inactive segment on auth -->
+  <ion-footer *ngIf="Active === true">
+    <ion-toolbar>
+      <ion-title> In progress: {{this.count}} </ion-title>
+    </ion-toolbar>
+  </ion-footer>
+  <ion-footer *ngIf="Active === false">
+    <ion-toolbar>
+      <ion-title> Compleated: {{this.count}} </ion-title>
+    </ion-toolbar>
+  </ion-footer>
+</ion-content>
